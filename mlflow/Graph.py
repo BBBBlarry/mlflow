@@ -1,9 +1,12 @@
+from copy import deepcopy
+
 from .Train import Optimizer
 
+
 class Graph:
-	def __init__(self, adj = {}, logging = True): 
+	def __init__(self, adj = {}, logging = True, optimizable_variables = []): 
 		self.adj = adj
-		self.optimizable_variables = []
+		self.optimizable_variables = optimizable_variables
 
 	def print_me(self):
 		print repr(self.adj)
@@ -52,6 +55,11 @@ class Graph:
 		for d in dependencies:
 			d.pass_gradients(node, *self.get_dependency(d))
 			self.fill_gradients(d)
+
+	# return a copy of this graph
+	def copy(self):
+		return Graph(adj = deepcopy(self.adj), logging = True, \
+			optimizable_variables = deepcopy(self.optimizable_variables))
 
 
 	############################################

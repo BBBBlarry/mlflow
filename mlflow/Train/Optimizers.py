@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Optimizer(object):
 	def __init__(self, graph):
 		self.graph = graph
@@ -29,6 +32,7 @@ class Optimizer(object):
 	def get_gradients(self, opt_var):
 		return opt_var.gradients
 
+
 class GradientDescentOptimizer(Optimizer):
 	def __init__(self, learning_rate, graph):
 		super(GradientDescentOptimizer, self).__init__(graph)
@@ -39,3 +43,27 @@ class GradientDescentOptimizer(Optimizer):
 		assert not grad is None
 		assert grad.shape == var.data.shape
 		var.update(var.data - grad * self.learning_rate)
+
+
+class AdaGradOptimizer(Optimizer):
+	def __init__(self, learning_rate, graph, eps=1e-6):
+		super(AdaGradOptimizer, self).__init__(graph)
+		self.learning_rate = learning_rate
+		self.eps = 1e-6
+		self.hist_grad = None
+
+	# optimzation strage
+	def opt(self, var, grad):
+		assert not grad is None
+		assert grad.shape == var.data.shape
+
+		# first run, initialize historical grad (to 0)
+		if self.hist_grad is None:
+			self.hist_grad = np.zeros_like(grad)
+
+		# update historical gradients
+		self.hist_grad += np.power(grad, 2)
+		# calculate the adjusted gradient
+		adj_grad = grad / (self.eps + np.sqrt(self.hist_grad))
+
+		var.update(var.data - adj_grad * self.learning_rate)

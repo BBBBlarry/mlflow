@@ -2,6 +2,9 @@ import mlflow as mf
 import numpy as np
 from tqdm import tqdm
 
+# for testing consistency
+np.random.seed(42)
+
 ### hyperparams
 n_samples = 10
 itr = 1000
@@ -37,7 +40,10 @@ print cost_res
 
 
 ### training step
-opt = mf.Train.GradientDescentOptimizer(0.1, graph = g).minimize(cost)
+# compare the optimization methods
+#opt = mf.Train.GradientDescentOptimizer(0.1, graph = g.minimize(cost)
+opt = mf.Train.AdaGradOptimizer(0.1, graph = g).minimize(cost)
+
 for i in tqdm(range(itr)):
 	sess.run(opt, feed_dict = {x_placeholder: x, y_placeholder: y})
 

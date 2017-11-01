@@ -6,6 +6,8 @@ build:
 	python setup.py build
 install: 
 	python setup.py install
+example: 
+	python ./examples/example.py
 clean-build:
 	rm -f -r build/
 clean-pyc:
@@ -28,6 +30,8 @@ help:
 	@echo "        Build ${PROJECT_NAME}."
 	@echo "    install"
 	@echo "        Install ${PROJECT_NAME} on your local machine."
+	@echo "    example"
+	@echo "        Run example."
 	@echo "    test"
 	@echo "        Run the test suite."
 	@echo "    clean-build"
