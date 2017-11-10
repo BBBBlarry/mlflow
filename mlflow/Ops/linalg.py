@@ -5,7 +5,7 @@ from ..utils import *
 
 class Sigmoid():
 	def __init__(self):
-		pass
+		pass		
 	def run(self, a):
 		return 1.0 / (1.0 + np.exp(-a))
 
@@ -33,6 +33,7 @@ class Matmul():
 class Sum():
 	def __init__(self):
 		pass
+		
 	def run(self, a):
 		return np.sum(a)
 

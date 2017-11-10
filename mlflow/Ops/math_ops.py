@@ -6,6 +6,7 @@ from ..utils import *
 class Add():
 	def __init__(self):
 		pass
+
 	def run(self, a, b):
 		return np.add(a, b)
 
@@ -30,6 +31,7 @@ class Add():
 class Sub():
 	def __init__(self):
 		pass
+
 	def run(self, a, b):
 		return np.add(a, -b)
 
@@ -43,6 +45,7 @@ class Sub():
 class Mul():
 	def __init__(self):
 		pass
+
 	def run(self, a, b):
 		return a * b
 
@@ -58,6 +61,7 @@ class Mul():
 class Div():
 	def __init__(self):
 		pass
+
 	def run(self, a, b):
 		return a / b
 
@@ -74,6 +78,7 @@ class Div():
 class Pow():
 	def __init__(self):
 		pass
+
 	def run(self, b, p):
 		return np.power(b, p) 
 

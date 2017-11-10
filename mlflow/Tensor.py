@@ -87,11 +87,13 @@ class Tensor(object):
 
 		return variable_node
 
+
 	###### private helper methods ######
 	def __num_to_constant(self, a):
 		if isinstance(a, int) or isinstance(a, float):
 			a = Constant(a, self.graph)
 		return a
+
 
 
 class Variable(Tensor):

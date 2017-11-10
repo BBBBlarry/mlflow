@@ -7,7 +7,7 @@ build:
 install: 
 	python setup.py install
 example: 
-	python ./examples/example.py
+	python ./examples/example_deserialization.py
 clean-build:
 	rm -f -r build/
 clean-pyc:
