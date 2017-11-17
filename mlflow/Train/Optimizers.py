@@ -38,7 +38,7 @@ class GradientDescentOptimizer(Optimizer):
 		super(GradientDescentOptimizer, self).__init__(graph)
 		self.learning_rate = learning_rate
 
-	# optimzation strage
+	# optimzation stage
 	def opt(self, var, grad):
 		assert not grad is None
 		assert grad.shape == var.data.shape
@@ -50,20 +50,42 @@ class AdaGradOptimizer(Optimizer):
 		super(AdaGradOptimizer, self).__init__(graph)
 		self.learning_rate = learning_rate
 		self.eps = 1e-6
-		self.hist_grad = None
+		self.hist_grad = dict.fromkeys(self.opt_vars)
 
-	# optimzation strage
+	# optimzation stage
+	def opt(self, var, grad):
+		assert not grad is None
+		assert grad.shape == var.data.shape
+		assert var in self.hist_grad 
+
+		# first run, initialize historical grad (to 0)
+		if self.hist_grad[var] is None:
+			self.hist_grad[var] = np.zeros_like(grad)
+
+		# update historical gradients
+		self.hist_grad[var] += np.power(grad, 2)
+		# calculate the adjusted gradient
+		adj_grad = grad / (self.eps + np.sqrt(self.hist_grad[var]))
+
+		var.update(var.data - adj_grad * self.learning_rate)
+
+
+### This optimizer is implemented just for fun,
+### it's goal is to introduce a new regularization 
+### technique. 
+### Be cautious about using it until I test
+### it's effectiveness. 
+class RandomGradientOptimizer(Optimizer):
+	def __init__(self, learning_rate, skip_rate, graph):
+		super(RandomGradientOptimizer, self).__init__(graph)
+		self.learning_rate = learning_rate
+		self.skip_rate = min(max(skip_rate, 0.0), 1.0)
+
+	# optimzation stage
 	def opt(self, var, grad):
 		assert not grad is None
 		assert grad.shape == var.data.shape
 
-		# first run, initialize historical grad (to 0)
-		if self.hist_grad is None:
-			self.hist_grad = np.zeros_like(grad)
-
-		# update historical gradients
-		self.hist_grad += np.power(grad, 2)
-		# calculate the adjusted gradient
-		adj_grad = grad / (self.eps + np.sqrt(self.hist_grad))
-
-		var.update(var.data - adj_grad * self.learning_rate)
+		# only optimize a few variables based on skip rate
+		if np.random.random() > self.skip_rate:
+			var.update(var.data - grad * self.learning_rate)
