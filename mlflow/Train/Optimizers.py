@@ -14,12 +14,13 @@ class Optimizer(object):
 		self.cost_node = var
 		return self
 
-	#TODO(blarry): dummy_cost is here to fit into the 
+	#TODO(blarry): dummy_cost is here to fit into the
 	# deferred execution scheme, should be fixed
 	def run(self, dummy_cost):
 		self.cost_node.set_default_gradients()
 		self.graph.fill_gradients(self.cost_node)
 
+		#TODO(blart): parallelize this
 		for var in self.opt_vars:
 			grad = self.get_gradients(var)
 			self.opt(var, grad)
@@ -56,7 +57,7 @@ class AdaGradOptimizer(Optimizer):
 	def opt(self, var, grad):
 		assert not grad is None
 		assert grad.shape == var.data.shape
-		assert var in self.hist_grad 
+		assert var in self.hist_grad
 
 		# first run, initialize historical grad (to 0)
 		if self.hist_grad[var] is None:
@@ -71,10 +72,10 @@ class AdaGradOptimizer(Optimizer):
 
 
 ### This optimizer is implemented just for fun,
-### it's goal is to introduce a new regularization 
-### technique. 
+### it's goal is to introduce a new regularization
+### technique.
 ### Be cautious about using it until I test
-### it's effectiveness. 
+### it's effectiveness.
 class RandomGradientOptimizer(Optimizer):
 	def __init__(self, learning_rate, skip_rate, graph):
 		super(RandomGradientOptimizer, self).__init__(graph)

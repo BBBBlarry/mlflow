@@ -2,13 +2,13 @@ PROJECT_NAME = mlflow
 
 init:
 	pip install -r requirements.txt
-build: 
+build:
 	python setup.py build
-install: 
+install:
 	python setup.py install
-example: 
-	python ./examples/example_random_grad.py
+example:
 	python ./examples/example_training.py
+	python ./examples/example_training_parallel.py
 
 clean-build:
 	rm -f -r build/

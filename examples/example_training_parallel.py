@@ -17,7 +17,11 @@ target_idx = np.floor(np.sum(x, axis = 1)).astype(int)
 y[np.arange(y.shape[0]), target_idx] = 1
 
 ### graph
-g = mf.Graph()
+GRAPH_OC = {
+	"FILLGRADIENTS_PARA_FLAG": True,
+	"FILLGRADIENTS_PARA_CUTOFF": 1
+}
+g = mf.Graph(optimization_configs = GRAPH_OC)
 
 ### input data place holder
 x_placeholder = mf.placeholder([n_samples, 10], graph = g)

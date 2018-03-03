@@ -1,23 +1,26 @@
 from copy import deepcopy
 from .Train import Optimizer
+from .Workers import FillGradientsWorker
 import pickle
 import os
 
+
 class Graph:
-	def __init__(self, adj = {}, logging = True, optimizable_variables = [], tags = {}, from_pickle=False, pickle_name = "model", pickle_path = "./models/"): 
+	def __init__(self, adj = {}, logging = True, optimizable_variables = [], tags = {}, optimization_configs = {}, from_pickle=False, pickle_name = "model", pickle_path = "./models/"):
 		# initialize from scratch
 		if not from_pickle:
-			self.initialize_graph(adj, logging, optimizable_variables, tags)
+			self.initialize_graph(adj, logging, optimizable_variables, tags, optimization_configs)
 		else:
 			# init from pickle
 			self.deserialize(pickle_name, pickle_path)
 
 
-	def initialize_graph(self, adj, logging, optimizable_variables, tags):
+	def initialize_graph(self, adj, logging, optimizable_variables, tags, optimization_configs):
 		self.adj = adj
 		self.optimizable_variables = optimizable_variables
 		self.tags = tags
 		self.logging = logging
+		self.OC = optimization_configs
 
 
 	def print_me(self):
@@ -46,7 +49,7 @@ class Graph:
 			else:
 				# add name for future reference
 				self.tags[tag] = node
-	
+
 	# get a node by its name
 	def get_node(self, tag):
 		if tag in self.tags:
@@ -84,11 +87,29 @@ class Graph:
 		else:
 			return res
 
-	def fill_gradients(self, node):
-		dependencies = self.get_dependency(node)
-		for d in dependencies:
-			d.pass_gradients(node, *self.get_dependency(d))
-			self.fill_gradients(d)
+	def fill_gradients(self, node, lo = None, hi = None):
+		run_parallel = "FILLGRADIENTS_PARA_FLAG" in self.OC
+		if run_parallel:
+			# base case
+			if lo != None and hi != None:
+				dependencies = self.get_dependency(node)
+				for d_i in range(lo, hi):
+					d = dependencies[d_i]
+					d.pass_gradients(node, *self.get_dependency(d))
+					self.fill_gradients(d, node)
+			else:
+				assert "FILLGRADIENTS_PARA_CUTOFF" in self.OC
+				cutoff = self.OC["FILLGRADIENTS_PARA_CUTOFF"]
+				# create worker
+				worker = FillGradientsWorker(self, node, 0, len(self.get_dependency(node)), cutoff = cutoff)
+				# do the work on current thread
+				worker.run()
+		else:
+			dependencies = self.get_dependency(node)
+			for d in dependencies:
+				d.pass_gradients(node, *self.get_dependency(d))
+				self.fill_gradients(d)
+
 
 	# return a copy of this graph
 	def copy(self):
@@ -116,7 +137,7 @@ class Graph:
 	def deserialize(self, name, path="./models/"):
 		full_path = path+name+".model"
 		if not os.path.exists(os.path.dirname(full_path)):
-			raise 
+			raise
 
 		with open(full_path, 'r') as from_file:
 			data = from_file.read()
@@ -124,7 +145,7 @@ class Graph:
 			self.initialize_graph(g.adj, g.logging, g.optimizable_variables, g.tags)
 
 	############################################
-	# add an optimizable variable to the graph, 
+	# add an optimizable variable to the graph,
 	# this will allow the optimizer later on to
 	# be attached to them
 	def add_opt_var(self, opt_var):
