@@ -1,13 +1,12 @@
 import mlflow as mf
 import numpy as np
-from tqdm import tqdm
-
 # to run this example, you have to install python-mnist and scikit learn
 # use "pip install python-mnist"
 from mnist import MNIST
+from sklearn.preprocessing import StandardScaler
 # use "pip install sklearn"
 from sklearn.utils import shuffle
-from sklearn.preprocessing import StandardScaler
+from tqdm import tqdm
 
 # for testing consistency
 np.random.seed(42)
@@ -93,6 +92,3 @@ for e in range(epochs):
 
 print "50 Sample Train Cost: \n", sess.run(cost, feed_dict = {x_placeholder: x_train[:batch_size], y_placeholder: y_train[:batch_size]})
 print "50 Sample Test Cost: \n", sess.run(cost, feed_dict = {x_placeholder: x_test[:batch_size], y_placeholder: y_test[:batch_size]})
-
-
-

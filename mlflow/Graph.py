@@ -1,8 +1,9 @@
+import os
+import pickle
 from copy import deepcopy
+
 from .Train import Optimizer
 from .Workers import FillGradientsWorker
-import pickle
-import os
 
 
 class Graph:

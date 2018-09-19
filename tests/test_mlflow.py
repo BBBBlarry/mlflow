@@ -10,3 +10,4 @@ def test_components():
 	assert mf.Train
 	assert mf.Exceptions
 	assert mf.utils
+	assert mf.Workers

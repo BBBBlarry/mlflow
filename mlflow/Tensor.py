@@ -15,7 +15,7 @@ class Tensor(object):
 		return self.data
 
 	###### gradient based optimization ######
-	#TODO(blarry): figure out a better way to pass 
+	#TODO(blarry): figure out a better way to pass
 	# 			   gradients from Tensors
 	def pass_gradients(self, out_tensor, in_tensor = None):
 		pass
@@ -38,7 +38,7 @@ class Tensor(object):
 		self.graph.add_edge(variable_node, op_node)
 
 		return variable_node
-	
+
 	def __sub__(self, other):
 		other = self.__num_to_constant(other)
 
@@ -99,7 +99,7 @@ class Tensor(object):
 class Variable(Tensor):
 	def __init__(self, data, graph):
 		super(Variable, self).__init__(data, graph)
-		# when data is not None, we assume 
+		# when data is not None, we assume
 		# this variable is optimizable
 		if not data is None:
 			graph.add_opt_var(self)
